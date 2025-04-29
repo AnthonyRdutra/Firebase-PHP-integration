@@ -35,24 +35,4 @@ abstract class FireBaseAbstract
     $this->connect();
     $this->db->add($table_name, $array);
   }
-
-  public function addNewClient(string $client_name, $table_name = null)
-  {
-    if ($table_name == null) {
-      $table_name = '/teste/Clients';
-    }
-    $this->connect();
-    $result = $this->db->list($table_name, $client_name);
-
-    $array = [
-      'client_name' => $client_name
-    ];
-
-    if($result == null ){
-        $this->db->addNewClient($table_name, $array);
-        return; 
-      }else{
-        return;
-      }
-  }
 }
