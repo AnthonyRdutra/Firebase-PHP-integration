@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__DIR__, 3) . '\Firebase-connect-php\src\ConnectDB.php';
+require dirname(__DIR__) . '\src\ConnectDB.php';
 date_default_timezone_set('America/Sao_Paulo');
 
 abstract class FireBaseAbstract
