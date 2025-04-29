@@ -3,7 +3,6 @@ require 'D:/github/PostoDsan/vendor/autoload.php';
 
 use Kreait\Firebase\Factory;
 
-
 class ConnectDB
 {
     private $firebase;
@@ -11,20 +10,19 @@ class ConnectDB
     public function connect()
     {
         print(__METHOD__ . "\n");
-        $serviceAccountKeyFilePath = dirname(__DIR__, 3) . '\json\db-postodsan-2d8fedaf278d.json';
+        $serviceAccountKeyFilePath = 'YOUR PATH TO THE JSON KEY';
 
         try {
-            // Cria uma instância do Firebase passando o arquivo de chave
+            // Creates a Firebase instance using the service account key file
             $this->firebase = (new Factory)
                 ->withServiceAccount($serviceAccountKeyFilePath)
-                ->withDatabaseUri('https://db-postodsan-default-rtdb.firebaseio.com')
+                ->withDatabaseUri('https://YOUR-RTDABASE.firebaseio.com')
                 ->createDatabase();
-            echo "conectado ao banco de dados\n";
+            echo "Connected to the database\n";
         } catch (Exception $e) {
-            echo "Erro: " . $e->getMessage();
+            echo "Error: " . $e->getMessage();
         }
     }
-
 
     public function add(string $table_name, $array)
     {
@@ -36,20 +34,19 @@ class ConnectDB
         if (!$snapshot->exists()) {
             try {
                 $ref->push($array);
-                echo "\nConteúdo Adicionado com sucesso";
+                echo "\nContent successfully added";
             } catch (Exception $e) {
                 throw new Exception($e->getMessage());
             }
         } else {
             try {
                 $ref->push($array);
-                echo "\nConteúdo Adicionado com sucesso";
+                echo "\nContent successfully added";
             } catch (Exception $e) {
                 throw new Exception($e->getMessage());
             }
         }
     }
-
 
     public function addNewClient(string $table_name, $array)
     {
@@ -61,15 +58,14 @@ class ConnectDB
         if (!$snapshot->exists()) {
             try {
                 $ref->set($array);
-                echo "\nTabela $table_name criada com sucesso";
+                echo "\nTable $table_name successfully created";
             } catch (Exception $e) {
                 throw new Exception($e->getMessage());
             }
         } else {
-            echo "\nCliente já existe.\n";
+            echo "\nClient already exists.\n";
         }
     }
-
 
     public function update(string $table_name, $array)
     {
@@ -81,56 +77,55 @@ class ConnectDB
         if ($snapshot->exists()) {
             try {
                 $ref->set($array);
-                echo "\nTabela $table_name modificada com sucesso";
+                echo "\nTable $table_name successfully updated";
             } catch (Exception $e) {
                 throw new Exception($e->getMessage());
             }
         } else {
-            throw new Exception("\nTabela solicitada não existe\n");
+            throw new Exception("\nRequested table does not exist\n");
         }
     }
 
-
-    public function list(string $table_name, $filtro = null)
+    public function list(string $table_name, $filter = null)
     {
         print(__METHOD__ . "\n");
         try {
             $ref = $this->firebase->getReference($table_name);
-            $dados = $ref->getValue();
+            $data = $ref->getValue();
 
-            if (empty($dados)) {
+            if (empty($data)) {
                 return null;
             }
 
-            // Se nenhum filtro for passado, retorna todos os dados
-            if (!$filtro) {
-                return $dados;
+            // If no filter is provided, return all data
+            if (!$filter) {
+                return $data;
             }
 
-            $resultado = [];
+            $result = [];
 
-            // Se o filtro for um ID (chave principal), retorna diretamente se existir
-            if (isset($dados[$filtro])) {
-                return [$filtro => $dados[$filtro]];
+            // If the filter is an ID (primary key), return it directly if it exists
+            if (isset($data[$filter])) {
+                return [$filter => $data[$filter]];
             }
 
-            // Se o filtro for um valor dentro dos registros
-            foreach ($dados as $key => $item) {
+            // If the filter is a value inside the records
+            foreach ($data as $key => $item) {
                 if (is_array($item)) {
-                    foreach ($item as $campo => $valor) {
-                        if (is_string($valor) && stripos($valor, $filtro) !== false) {
-                            $resultado[$key] = $item;
+                    foreach ($item as $field => $value) {
+                        if (is_string($value) && stripos($value, $filter) !== false) {
+                            $result[$key] = $item;
                             break;
                         }
                     }
                 }
             }
 
-            if (empty($resultado)) {
-                throw new Exception("\nNenhum resultado encontrado para o filtro informado.\n");
+            if (empty($result)) {
+                throw new Exception("\nNo results found for the provided filter.\n");
             }
 
-            return $resultado;
+            return $result;
         } catch (Exception $e) {
             return ["error" => $e->getMessage()];
         }
