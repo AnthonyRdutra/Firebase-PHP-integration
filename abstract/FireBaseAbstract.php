@@ -18,7 +18,7 @@ abstract class FireBaseAbstract
     $this->connect();
     $response = $this->db->list($table_name, $filter);
     if ($response === null) {
-      echo "\nNenhuma tabela encontrada no endereço especificado\n";
+      echo "\nNo data found at the specified address\n";
     } else {
       return $response;
     }
